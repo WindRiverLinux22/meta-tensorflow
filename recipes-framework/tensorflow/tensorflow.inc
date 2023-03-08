@@ -11,7 +11,8 @@ SRC_URI = "git://github.com/tensorflow/tensorflow.git;branch=r2.11;protocol=http
            file://0001-drop-bazel_toolchains_repositories-to-support-offlin.patch \
            file://0001-drop-v2-config.patch \
            file://0002-Replace-distutils.sysconfig.get_python_lib-with-sysc.patch \
-	   file://0001-hardcode-go-SDKS.patch \
+           file://0001-hardcode-go-SDKS.patch \
+           file://0001-Revert-Allows-dumping-intermediate-IRs-for-TF-quanti.patch \
           "
 
 S = "${WORKDIR}/git"
