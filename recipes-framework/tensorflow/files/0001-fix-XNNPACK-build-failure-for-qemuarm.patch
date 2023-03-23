@@ -1,6 +1,6 @@
-From fbeda57f6da004feeda019e162361d662829f666 Mon Sep 17 00:00:00 2001
+From 1c429beb488f99fd5b880672e7086c2ad8ba3e7b Mon Sep 17 00:00:00 2001
 From: Hongxu Jia <hongxu.jia@windriver.com>
-Date: Thu, 10 Nov 2022 15:06:33 +0800
+Date: Thu, 23 Mar 2023 11:11:34 +0800
 Subject: [PATCH] fix XNNPACK build failure for qemuarm
 
 Does not support 32 bit ARM with Neon DotProduct
@@ -8,28 +8,27 @@ Does not support 32 bit ARM with Neon DotProduct
 Upstream-Status: Inappropriate [oe specific]
 
 Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
-Signed-off-by: Archana Polampalli <archana.polampalli@windriver.com>
 ---
  .../0001-XNNPACK-support-32-bit-x86.patch     | 214 +++++++++++++++++-
  1 file changed, 208 insertions(+), 6 deletions(-)
 
 diff --git a/third_party/0001-XNNPACK-support-32-bit-x86.patch b/third_party/0001-XNNPACK-support-32-bit-x86.patch
-index 2141c37236b..97a2e511cee 100644
+index 2141c37236b..f0a798c6561 100644
 --- a/third_party/0001-XNNPACK-support-32-bit-x86.patch
 +++ b/third_party/0001-XNNPACK-support-32-bit-x86.patch
 @@ -1,22 +1,36 @@
 -From 2345756776fa09fd95e29f96f781e15e3b18a61b Mon Sep 17 00:00:00 2001
-+From 4b4dacfa05831a6f5ecc5fe180bdd62ebabff8f4 Mon Sep 17 00:00:00 2001
++From c0414cae5daadfde54e061a3639da6384551658e Mon Sep 17 00:00:00 2001
  From: Hongxu Jia <hongxu.jia@windriver.com>
  Date: Tue, 17 Aug 2021 01:09:53 -0700
  Subject: [PATCH] XNNPACK: support 32 bit x86
-
+ 
  Use android_x86 as a workaround to support 32 bit x86
-
+ 
 +Does not support 32 bit ARM with Neon DotProduct
 +
  Upstream-Status: Inappropriate [oe specific]
-
+ 
  Signed-off-by: Hongxu Jia <hongxu.jia@windriver.com>
  ---
 - BUILD.bazel | 1 -
@@ -48,14 +47,14 @@ index 2141c37236b..97a2e511cee 100644
 + .../gen/4x8c4-minmax-rndnu-aarch32-neondot-cortex-a55.S       | 4 ++--
 + src/qs8-igemm/gen/4x8c4-minmax-rndnu-aarch32-neondot-ld64.S   | 4 ++--
 + 13 files changed, 24 insertions(+), 26 deletions(-)
-
+ 
  diff --git a/BUILD.bazel b/BUILD.bazel
 -index 27ab07c9..f223d2ab 100644
-+index fea0f74..c98066b 100644
++index 7de72d0..3a78de3 100644
  --- a/BUILD.bazel
  +++ b/BUILD.bazel
 -@@ -8783,7 +8783,6 @@ config_setting(
-+@@ -15689,7 +15689,6 @@ config_setting(
++@@ -16209,7 +16209,6 @@ config_setting(
   config_setting(
       name = "android_x86",
       values = {
@@ -63,7 +62,7 @@ index 2141c37236b..97a2e511cee 100644
           "cpu": "x86",
       },
   )
-+@@ -15910,7 +15909,6 @@ alias(
++@@ -16446,7 +16445,6 @@ alias(
 + selects.config_setting_group(
 +     name = "arm_dotprod_enabled_by_default",
 +     match_any = [
@@ -78,7 +77,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -48,8 +48,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -93,7 +92,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -48,8 +48,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -108,7 +107,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -50,8 +50,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -123,7 +122,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -50,8 +50,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -138,7 +137,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -60,8 +60,8 @@ $else:
 +   //    int8_t output_max;          d13[7]
 +   //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -153,7 +152,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -61,8 +61,8 @@ $else:
 +   //    int8_t output_max;          d13[7]
 +   //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -168,7 +167,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -51,8 +51,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } rndnu_neon;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -183,7 +182,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -51,8 +51,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } rndnu_neon;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -198,7 +197,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -62,8 +62,8 @@ $else:
 +   //    int8_t output_max;          d13[7]
 +   //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -213,7 +212,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -63,8 +63,8 @@ $else:
 +   //    int8_t output_max;          d13[7]
 +   //  } xnn_qs8_minmax_params.neonv8;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -228,7 +227,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -53,8 +53,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } rndnu_neon;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -243,7 +242,7 @@ index 2141c37236b..97a2e511cee 100644
 +@@ -53,8 +53,8 @@
 + //    int8_t output_max;          d13[7]
 + //  } rndnu_neon;
-+
++ 
 +-// iOS does not support 32 bit ARM with Neon DotProduct.
 +-#ifndef __APPLE__
 ++// Do not support 32 bit ARM with Neon DotProduct.
@@ -251,9 +250,10 @@ index 2141c37236b..97a2e511cee 100644
 + BEGIN_FUNCTION xnn_qs8_igemm_minmax_rndnu_ukernel_4x8c4__aarch32_neondot_ld64
 +         ADD     r2, r2, 3               // kc = (kc + 3) & ~3
 +         BIC     r2, r2, 3
- --
+ -- 
 -2.30.2
 +2.27.0
-
---
+ 
+-- 
 2.27.0
+
